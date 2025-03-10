@@ -10,6 +10,8 @@ export interface FinancialEntry {
   amount: number;
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
   taxes?: TaxElement[];
+  type: 'income' | 'expense';
+  date: Date;
 }
 
 export interface Summary {

@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import type { FinancialEntry, Summary, TaxElement } from './types';
 import FinancialList from './components/FinancialList.vue';
+import CsvImport from "./components/CsvImport.vue";
 
 const incomeEntries = ref<FinancialEntry[]>([]);
 const expenseEntries = ref<FinancialEntry[]>([]);
@@ -191,6 +192,15 @@ const removeData = () => {
   localStorage.removeItem('financial-tracker-data');
 };
 
+const handleCsvImport = (entries: FinancialEntry[]) => {
+  const incomes = entries.filter(entry => entry.type === 'income');
+  const expenses = entries.filter(entry => entry.type === 'expense');
+
+  // Add these entries to your existing state
+  incomes.forEach(entry => incomeEntries.value.push(entry));
+  expenses.forEach(entry => expenseEntries.value.push(entry));
+};
+
 watch(
   [incomeEntries, expenseEntries],
   () => {
@@ -210,6 +220,7 @@ onMounted(() => {
       <h1 class="text-4xl font-bold text-gray-800 text-center mb-10">Financial Tracker</h1>
 
       <div class="flex justify-center gap-4 mb-8">
+        <CsvImport @import="handleCsvImport" />
         <button @click="exportData" class="px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 focus:ring-gray-800 rounded-md font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
           Export Data
         </button>
