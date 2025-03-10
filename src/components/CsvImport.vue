@@ -11,33 +11,28 @@ const parseCSV = (file: File) => {
   reader.onload = (e) => {
     const text = e.target?.result as string;
     const lines = text.split('\n');
-    const headers = lines[0].split(';');
 
-    const entries: FinancialEntry[] = lines.slice(1)
+    const entries: FinancialEntry[] = lines
+        .slice(1)
         .filter(line => line.trim())
         .map(line => {
           const values = line.split(';');
 
-          let amount: number;
-          let type: string;
-          if (values[8] !== '') {
-            amount = parseInt(values[8])
-            type = 'expense'
-          } else {
-            amount = parseInt(values[9])
-            type = 'income'
-          }
+          const debit = values[8] ? parseFloat(values[8]) : 0;
+          const credit = values[9] ? parseFloat(values[9]) : 0;
+          const type = debit ? ('expense' as const) : ('income' as const);
+          const amount = Math.abs(debit || credit);
 
           return {
             id: crypto.randomUUID(),
             description: values[2],
-            amount: Math.abs(amount),
-            frequency: 'monthly',
+            amount,
+            frequency: 'monthly' as const,
             taxes: [],
-            type: type,
+            type,
             date: new Date(values[0].split('/').reverse().join('-'))
           };
-        });
+        }).filter(entry => entry.amount > 0);
 
     emit('import', entries);
   };

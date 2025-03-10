@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { defineEmits } from 'vue';
 import type { FinancialEntry, TaxElement } from '../types';
 
-defineProps<{
+const props = defineProps<{
   title: string;
   type: 'income' | 'expense';
   entries: FinancialEntry[];
@@ -46,7 +46,9 @@ const addEntry = () => {
     description: description.value,
     amount: Number(amount.value),
     frequency: frequency.value,
-    taxes: []
+    taxes: [],
+    type: props.type,
+    date: new Date()
   });
 
   description.value = '';
